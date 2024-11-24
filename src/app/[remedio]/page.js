@@ -19,11 +19,14 @@ export default function PaginaDoRemedio() {
         },
       })
         .then((response) => response.json())
-        .then((response) => {
-          if (response !=null || response != undefined) {
+        .then((response)=> {
+          if (response && response.remedio) {
               setRemedio(response.remedio);
-          }})
-        .catch((error) => console.error(error));
+          } else {
+              console.warn("Resposta vazia ou 'remedio' não encontrado");
+          }
+      })
+      .catch((error) => console.error(error));
     }
     getdata();
   },[])
