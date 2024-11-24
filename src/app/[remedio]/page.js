@@ -30,7 +30,7 @@ export default function PaginaDoRemedio() {
   useEffect(() => {
     const cookie = getCookie(nome);
     setRemedio(cookie);
-    atualizarBancoDeDados();
+
 
   }, [nome, atualizar]);
 
@@ -59,11 +59,13 @@ export default function PaginaDoRemedio() {
       if (comprimido.estado === "naoTomado") {
         remedio.cartelas[0].comprimidos[comprimido.numeroDoComprimido - 1].estado = "Tomado";
         setCookie(nome, remedio, { httpOnly: false, secure: false });
+        atualizarBancoDeDados();
         setAtualizar(atualizar + 1);
       } else {
         remedio.cartelas[0].comprimidos[comprimido.numeroDoComprimido - 1].estado =
           "naoTomado";
         setCookie(nome, remedio, { httpOnly: false, secure: false });
+        atualizarBancoDeDados();
         setAtualizar(atualizar + 1);
       }
     };
