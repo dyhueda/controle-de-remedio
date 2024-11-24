@@ -1,101 +1,192 @@
-import Image from "next/image";
+"use client";
+import ArrowLeftIcon from "@/components/icons/ArrowLeftIcon";
+import ArrowRightIcon from "@/components/icons/ArrowRightIcon";
+import CheckedBoxIcon from "@/components/icons/CheckedBoxIcon";
+import UncheckedBoxIcon from "@/components/icons/UncheckedBoxIcon";
+import { useRouter } from "next/navigation";
+import {useState } from "react";
+import { setCookie } from "@/utils/cookie";
+import criarCartela from "@/utils/criarCartela";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [nome, setNome] = useState("");
+  const [quantidade, setQuantidade] = useState(0);
+  const [quantidadePorDia, setQuantidadePorDia] = useState(0);
+  const [horario, setHorario] = useState("");
+  const [jaAberto, setJaAberto] = useState(false);
+  const [quantidadeNaCartelaAberta, setQuantidadeNaCartelaAberta] = useState(0);
+  const [pagina, setPagina] = useState(1);
+  const [erro, setErro] = useState("");
+  const dados ={
+    nome : nome,
+    quantidade : quantidade,
+    quantidadePorDia : quantidadePorDia,
+    horario: horario,
+    jaAberto : jaAberto,
+    quantidadeNaCartelaAberta: quantidadeNaCartelaAberta,
+  }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  criarCartela(dados);
+  const router = useRouter();
+
+  const handleProximaPagina = (e) => {
+    e.preventDefault();
+    if (pagina == 1) {
+      if (nome == "" || quantidade == 0) {
+        setErro("Todos os campos devem ser preenchidos");
+      } else {
+        setErro("");
+        setPagina(2);
+      }
+    }
+    if (pagina == 2) {
+      if (quantidadePorDia == 0 || horario == "" || jaAberto == true && quantidadeNaCartelaAberta == 0) {
+        setErro("Todos os campos devem ser preenchidos");
+      } else {
+        setErro("");
+        setPagina(3);
+        handleCriarCookie()
+      }
+    }
+    if (pagina == 3){
+      router.push("/"+nome)
+    }
+  };
+  const handlePaginaAnterior = (e) => {
+    e.preventDefault();
+    if (pagina != 1) {
+      setPagina(pagina - 1);
+    }
+  };
+  const handleCriarCookie =()=>{
+    const cartela = criarCartela(dados)
+    const remedio ={nome: nome,quantidade:quantidade, quantidadePorDia: quantidadePorDia, horario : horario, cartelas: [cartela] }
+    setCookie(nome, remedio , { httpOnly: false, secure: false })
+  }
+
+  return (
+    <div className="">
+      <div>
+        <form className="from-violet-700 to-indigo-400 via-indigo-600 bg-gradient-to-br rounded m-5 px-4 py-6 flex flex-col gap-2 text-purple-100 font-medium items-center text-center">
+          <h1 className="text-xl">Controle de Remédio</h1>
+          <span className="text-xs text-red-700">{erro}</span>
+          <ul className="flex gap-2">
+            <li
+              className={`rounded-full size-2 ${
+                pagina == 1 ? "bg-purple-900" : "bg-purple-500"
+              } border border-purple-200`}
+            ></li>
+            <li
+              className={`rounded-full size-2 ${
+                pagina == 2 ? "bg-purple-900" : "bg-purple-500"
+              } border border-purple-200`}
+            ></li>
+            <li
+              className={`rounded-full size-2 ${
+                pagina == 3 ? "bg-purple-900" : "bg-purple-500"
+              } border border-purple-200`}
+            ></li>
+          </ul>
+          {pagina == 1 && (
+            <div className="flex flex-col gap-2">
+              <label>Nome</label>
+              <input
+                onChange={(e) => {
+                  setNome(e.target.value);
+                }}
+                className="bg-violet-200 text-black rounded focus:ring-0 focus:outline-none"
+              />
+              <label>Quantidade de comprimidos por cartela</label>
+              <input
+                onChange={(e) => {
+                  setQuantidade(e.target.value);
+                }}
+                type="number"
+                className="bg-violet-200 text-black rounded focus:ring-0 focus:outline-none"
+              />
+            </div>
+          )}
+          {pagina == 2 && (
+            <div className="flex flex-col gap-2">
+              <label>Quantidade por dia</label>
+              <input
+                onChange={(e) => {
+                  setQuantidadePorDia(e.target.value);
+                }}
+                type="number"
+                className="bg-violet-200 text-black rounded focus:ring-0 focus:outline-none"
+              />
+              <label>Horário</label>
+              <span className="text-xs">(Horario do proximo comprimido)</span>
+              <input
+                onChange={(e) => setHorario(e.target.value)}
+                aria-label="Time"
+                type="time"
+                className="bg-violet-200 text-black rounded focus:ring-0 focus:outline-none"
+              />
+              <label>Ja esta aberto?</label>
+              <div>
+                {jaAberto ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setJaAberto(!jaAberto);
+                    }}
+                  >
+                    <CheckedBoxIcon />
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setJaAberto(!jaAberto);
+                    }}
+                  >
+                    <UncheckedBoxIcon />
+                  </button>
+                )}
+              </div>
+              {jaAberto && (
+              <>
+                <label>Quantidade na cartela aberta</label>
+                <input
+                  onChange={(e) => {
+                    setQuantidadeNaCartelaAberta(e.target.value);
+                  }}
+                  type="number"
+                  className="bg-violet-200 text-black rounded focus:ring-0 focus:outline-none"
+                />
+              </>
+
+              )}
+            </div>
+          )}
+          {pagina == 3 &&(
+            <div>
+              <h1>Confira os dados</h1>
+              <p>Nome: {nome}</p>
+              <p>Quantidade de comprimidos por cartela: {quantidade}</p>
+              <p>Quantidade de comprimidos por dia: {quantidadePorDia}</p>
+              <p>Horario: {horario}</p>
+            </div>
+          )}
+          <div className="flex gap-4">
+            <button
+              onClick={handlePaginaAnterior}
+              className="rounded bg-gradient-to-br from-violet-900 via-indigo-800 to-indigo-600 p-2"
+            >
+              <ArrowLeftIcon />
+            </button>
+
+            <button
+              onClick={handleProximaPagina}
+              className="rounded bg-gradient-to-br from-violet-900 via-indigo-800 to-indigo-600 p-2"
+            >
+              <ArrowRightIcon />
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
