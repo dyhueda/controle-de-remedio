@@ -17,6 +17,7 @@ export default function Home() {
   const [quantidadeNaCartelaAberta, setQuantidadeNaCartelaAberta] = useState(0);
   const [pagina, setPagina] = useState(1);
   const [erro, setErro] = useState("");
+  const date = new Date()
   const dados ={
     nome : nome,
     quantidade : quantidade,
@@ -24,6 +25,7 @@ export default function Home() {
     horario: horario,
     jaAberto : jaAberto,
     quantidadeNaCartelaAberta: quantidadeNaCartelaAberta,
+    date: date
   }
 
   criarCartela(dados);

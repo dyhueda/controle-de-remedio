@@ -52,6 +52,7 @@ export default function PaginaDoRemedio() {
       if (res.ok) {
         console.log("ok")
       } else {
+        console.error("Falha ao atualizar o remedio");
       }
     }
   };

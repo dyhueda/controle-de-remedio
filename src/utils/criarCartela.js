@@ -1,5 +1,5 @@
 export default function criarCartela(dados) {
-  const dia = new Date();
+  const dia = dados.date;
   const intervalo = 24 / dados.quantidadePorDia;
   if (dados.jaAberto === false) {
     const horario = [
